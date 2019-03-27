@@ -50,7 +50,7 @@ if task.get_n_parameters() == 2:
     task.visualize(cmap=plt.cm.Greys)
     x = logs.get_parameters()
     fx = np.array(logs.get_objectives())
-    color = np.arange(fx.shape[1])
+    color = np.array([np.arange(fx.shape[1])])
     plt.scatter(np.array(x[0]), np.array(x[1]), c=color, cmap=plt.cm.coolwarm, s=50)
     plt.xlabel('Variable 1')
     plt.ylabel('Variable 2')

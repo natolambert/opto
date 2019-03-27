@@ -47,6 +47,12 @@ class BO(IterativeOptimizer):
         self._logs.data.v = None
         self._logs.data.model = None
 
+    def _set_dataset(self,dataset):
+        """
+        NOL Added to load offline data into the BO optimizer
+        """
+        self.dataset = dataset
+
     def _select_parameters(self):
         """
         Select the next set of parameters to evaluate on the objective function
@@ -61,8 +67,13 @@ class BO(IterativeOptimizer):
             # TODO: use past_evals
             # Create model
             logging.info('Fitting response surface')
-            dataset = rdata.dataset(data_input=self._logs.get_parameters(), data_output=self._logs.get_objectives())
-            # print(dataset)
+            
+            # ##########################
+            # NOL Edited below
+            # dataset = rdata.dataset(data_input=self._logs.get_parameters(), data_output=self._logs.get_objectives())
+            dataset= self.dataset
+            # ##########################
+
             p = DotMap()
             p.verbosity = 0
             self._model = self.model(parameters=p)
@@ -87,45 +98,45 @@ class BO(IterativeOptimizer):
             p.verbosity = 1
             acq_opt = self.optimizer.optimizer(parameters=p, task=task, stopCriteria=stopCriteria)
             x = np.matrix(acq_opt.optimize())  # Optimize
-            fx = self._model.predict(dataset=x.T)
+            # fx = self._model.predict(dataset=x.T)
 
-            # Log stuff
-            if self._logs.data.m is None:
-                self._logs.data.m = np.matrix(fx[0])
-                self._logs.data.v = np.matrix(fx[1])
-            else:
-                self._logs.data.m = np.concatenate((self._logs.data.m, fx[0]), axis=0)
-                self._logs.data.v = np.concatenate((self._logs.data.v, fx[1]), axis=0)
-            if self.store_model:
-                if self._logs.data.model is None:
-                    self._logs.data.model = [self._model]
-                else:
-                    self._logs.data.model.append(self._model)
+            # # Log stuff
+            # if self._logs.data.m is None:
+            #     self._logs.data.m = np.matrix(fx[0])
+            #     self._logs.data.v = np.matrix(fx[1])
+            # else:
+            #     self._logs.data.m = np.concatenate((self._logs.data.m, fx[0]), axis=0)
+            #     self._logs.data.v = np.concatenate((self._logs.data.v, fx[1]), axis=0)
+            # if self.store_model:
+            #     if self._logs.data.model is None:
+            #         self._logs.data.model = [self._model]
+            #     else:
+            #         self._logs.data.model.append(self._model)
 
-            # Optimize mean function (for logging purposes)
-            if self.log_best_mean:
-                logging.info('Optimizing the mean function')
-                task = OptTask(f=self._model.predict_mean,
-                               n_parameters=self.task.get_n_parameters(),
-                               n_objectives=1,
-                               order=0,
-                               bounds=self.task.get_bounds(),
-                               name='Mean Function',
-                               task={'minimize'},
-                               labels_param=None, labels_obj=None,
-                               vectorized=True)
-                stopCriteria = StopCriteria(maxEvals=self.optimizer.maxEvals)
-                p = DotMap()
-                p.verbosity = 1
-                mean_opt = self.optimizer.optimizer(parameters=p, task=task, stopCriteria=stopCriteria)
-                best_x = np.matrix(acq_opt.optimize())  # Optimize
-                best_fx = self._model.predict(dataset=best_x.T)
-                if self._iter == 1:
-                    self._logs.data.best_m = np.matrix(best_fx[0])
-                    self._logs.data.best_v = np.matrix(best_fx[1])
-                else:
-                    self._logs.data.best_m = np.concatenate((self._logs.data.best_m, best_fx[0]), axis=0)
-                    self._logs.data.best_v = np.concatenate((self._logs.data.best_v, best_fx[1]), axis=0)
+            # # Optimize mean function (for logging purposes)
+            # if self.log_best_mean:
+            #     logging.info('Optimizing the mean function')
+            #     task = OptTask(f=self._model.predict_mean,
+            #                    n_parameters=self.task.get_n_parameters(),
+            #                    n_objectives=1,
+            #                    order=0,
+            #                    bounds=self.task.get_bounds(),
+            #                    name='Mean Function',
+            #                    task={'minimize'},
+            #                    labels_param=None, labels_obj=None,
+            #                    vectorized=True)
+            #     stopCriteria = StopCriteria(maxEvals=self.optimizer.maxEvals)
+            #     p = DotMap()
+            #     p.verbosity = 1
+            #     mean_opt = self.optimizer.optimizer(parameters=p, task=task, stopCriteria=stopCriteria)
+            #     best_x = np.matrix(acq_opt.optimize())  # Optimize
+            #     best_fx = self._model.predict(dataset=best_x.T)
+            #     if self._iter == 1:
+            #         self._logs.data.best_m = np.matrix(best_fx[0])
+            #         self._logs.data.best_v = np.matrix(best_fx[1])
+            #     else:
+            #         self._logs.data.best_m = np.concatenate((self._logs.data.best_m, best_fx[0]), axis=0)
+            #         self._logs.data.best_v = np.concatenate((self._logs.data.best_v, best_fx[1]), axis=0)
 
             return x
 
