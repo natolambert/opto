@@ -26,13 +26,13 @@ class bounds(object):
 
     def get_mean(self, idx=None):
         if idx is None:
-            return self.min + (self.max-self.min)/2
+            return self.min + (self.max - self.min) / 2
         else:
             assert np.all(idx < self.n_dim), 'invalid idx'
             if self.n_dim == 1:  # This is necessary because of the inconstistent behavior of numpy
                 return self.min + (self.max - self.min) / 2
             else:
-                return self.min[idx] + (self.max[idx]-self.min[idx])/2
+                return self.min[idx] + (self.max[idx] - self.min[idx]) / 2
 
     def get_min(self, idx=None):
         """
@@ -74,7 +74,7 @@ class bounds(object):
 
     def get_delta(self, idx=None):
         if idx is None:
-            return self.max-self.min
+            return self.max - self.min
         else:
             # TODO implement me
             pass
@@ -131,9 +131,10 @@ class bounds(object):
                 ix[:, n] = arrays[n][ix[:, n]]
 
             return ix
+
         l = []
         for i in range(self.get_n_dim()):
-            l.append(self.get_both(idx=i)[:,0])
+            l.append(self.get_both(idx=i)[:, 0])
         y = cartesian2(l)
         return y
 
@@ -145,14 +146,18 @@ class bounds(object):
         """
         # t = n + self.n_dim
         # return np.swapaxes((self.get_min() + (self.get_max() - self.get_min()) * np.random.rand(*t)), 0, -1).squeeze()
-        return self.get_min() + (self.get_max() - self.get_min()) * np.random.rand(*n)
+
+        if n[0] == 1:
+            return np.multiply(self.get_min() + (self.get_max() - self.get_min()), np.random.rand(self.n_dim))
+        else:
+            return self.get_min() + (self.get_max() - self.get_min()) * np.random.rand(*n)
         # TODO: make code more robust by considering self.n_dim explicitly
 
     def sample_grid(self, bin):
         D = self.get_n_dim()
         resolution = int(bin) * np.ones(D)  # TODO: accept resolution
         n_evals = np.prod(resolution, dtype='int')
-        result = np.mgrid[[slice(self.get_min(i), self.get_max(i), resolution[i]*1j) for i in range(D)]]
+        result = np.mgrid[[slice(self.get_min(i), self.get_max(i), resolution[i] * 1j) for i in range(D)]]
         out = result.reshape(D, n_evals).T
         return out
 
@@ -171,8 +176,8 @@ class bounds(object):
         :param new_bounds: new set of bounds
         :return: linear transformation
         """
-        A = np.diag(new_bounds.get_delta()/self.get_delta())
-        B = - self.get_min()*new_bounds.get_delta()/self.get_delta() + new_bounds.get_min()
+        A = np.diag(new_bounds.get_delta() / self.get_delta())
+        B = - self.get_min() * new_bounds.get_delta() / self.get_delta() + new_bounds.get_min()
         transformation = linearTransformation(A=A, B=B)
         return transformation
 

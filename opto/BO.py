@@ -167,7 +167,7 @@ class BO(IterativeOptimizer):
         if (self.task.opt_obj is None) and (plotDelta is True):
             plt.plot(logs.get_objectives().T, c='red', linewidth=2)
             plt.ylabel('Obj.Func.')
-            n_evals = logs.data.m.shape[0]
+            n_evals = logs.data.n_evals #logs.data.m.shape[0]
             x = np.arange(start=logs.get_n_evals() - n_evals, stop=logs.get_n_evals())
             spp.gauss_1D(y=logs.data.m, variance=logs.data.v, x=x, color='blue')
             if self.log_best_mean:
