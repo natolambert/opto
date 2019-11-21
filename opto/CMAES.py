@@ -24,7 +24,7 @@ class CMAES(Optimizer):
         # ----------
         self.x0 = parameters.get('x0', None)  # Initial mean
         self.sigma = parameters.get('sigma', 0.6)
-        self.popsize = parameters.get('popsize', 50)  # Population size (number of evaluations at each iteration)
+        self.popsize = parameters.get('popsize', 10)  # Population size (number of evaluations at each iteration)
         self.nRestarts = parameters.get('nRestarts', 1)  # TODO: Not implemented
 
     def _optimize(self):

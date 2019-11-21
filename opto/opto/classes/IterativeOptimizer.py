@@ -51,6 +51,9 @@ class IterativeOptimizer(Optimizer):
 
             # Select candidate parameters
             parameters = self._select_parameters()
+
+            if len(parameters) > 1:
+                parameters = np.matrix(parameters[0])
             self.last_x = parameters
 
             # Evaluate parameters

@@ -9,6 +9,8 @@ from dotmap import DotMap
 import opto.regression as rregression
 import opto.data as rdata
 from opto.CMAES import CMAES
+from opto.PAREGO import PAREGO
+from opto.RandomSearch import RandomSearch
 from opto.opto.classes.OptTask import OptTask
 from opto.opto.classes.StopCriteria import StopCriteria
 from opto.opto.acq_func import *
@@ -70,8 +72,8 @@ class BO(IterativeOptimizer):
             
             # ##########################
             # NOL Edited below
-            # dataset = rdata.dataset(data_input=self._logs.get_parameters(), data_output=self._logs.get_objectives())
-            dataset= self.dataset
+            dataset = rdata.dataset(data_input=self._logs.get_parameters(), data_output=self._logs.get_objectives())
+            # dataset= self.dataset
             # ##########################
 
             p = DotMap()
@@ -98,7 +100,7 @@ class BO(IterativeOptimizer):
             p.verbosity = 1
             acq_opt = self.optimizer.optimizer(parameters=p, task=task, stopCriteria=stopCriteria)
             x = np.matrix(acq_opt.optimize())  # Optimize
-            # fx = self._model.predict(dataset=x.T)
+            fx = self._model.predict(dataset=x.T)
 
             # # Log stuff
             # if self._logs.data.m is None:
@@ -138,7 +140,7 @@ class BO(IterativeOptimizer):
             #         self._logs.data.best_m = np.concatenate((self._logs.data.best_m, best_fx[0]), axis=0)
             #         self._logs.data.best_v = np.concatenate((self._logs.data.best_v, best_fx[1]), axis=0)
 
-            return x
+            return x, fx
 
     def f_visualize(self):
         # TODO: plot also model (see plot_optimization_curve)
