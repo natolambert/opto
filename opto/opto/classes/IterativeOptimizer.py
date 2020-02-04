@@ -52,10 +52,15 @@ class IterativeOptimizer(Optimizer):
             # Select candidate parameters
             parameters = self._select_parameters()
 
-            if len(parameters) > 1:
-                parameters = np.matrix(parameters[0])
+            # if len(parameters) > 1:
+            #     parameters = np.matrix(parameters[0])
+            # self.last_x = parameters
+
+            parameters = self._select_parameters()
             self.last_x = parameters
 
+            if type(parameters)==tuple:
+                parameters = parameters[0]
             # Evaluate parameters
             if self.order == 0:
                 self.last_fx = self._evaluate(parameters)

@@ -69,7 +69,7 @@ class Optimizer(object):
 
         end = timer()
         logging.info('Optimization completed in %f[s]' % (end - self._startTime))
-        logging.info('Optimization ended with flag: ')  # TODO: self.stopCriteria
+        # logging.info('Optimization ended with flag: ')  # TODO: self.stopCriteria
 
         return out
 

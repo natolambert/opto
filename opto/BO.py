@@ -94,10 +94,10 @@ class BO(IterativeOptimizer):
                            name='Acquisition Function',
                            task={'minimize'},
                            labels_param=None, labels_obj=None,
-                           vectorized=True)
+                           vectorized=False) # Check if this is CMA optimization
             stopCriteria = StopCriteria(maxEvals=self.optimizer.maxEvals)
             p = DotMap()
-            p.verbosity = 1
+            p.verbosity = 0
             acq_opt = self.optimizer.optimizer(parameters=p, task=task, stopCriteria=stopCriteria)
             x = np.matrix(acq_opt.optimize())  # Optimize
             fx = self._model.predict(dataset=x.T)
