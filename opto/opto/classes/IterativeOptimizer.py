@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from .Optimizer import Optimizer
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -16,6 +17,7 @@ class IterativeOptimizer(Optimizer):
     """
     This is an abstract class for all iterative optimizers (i.e., most of the optimizers out there)
     """
+
     def __init__(self, task, stopCriteria, parameters=DotMap()):
         super(IterativeOptimizer, self).__init__(task=task, stopCriteria=stopCriteria, parameters=parameters)
         # IterativeOptimizer collect a few useful info for easy use.
@@ -50,7 +52,7 @@ class IterativeOptimizer(Optimizer):
             logging.info('Iteration %d' % self._iter)
 
             # Select candidate parameters
-            parameters = self._select_parameters()
+            # parameters = self._select_parameters()
 
             # if len(parameters) > 1:
             #     parameters = np.matrix(parameters[0])
@@ -59,7 +61,7 @@ class IterativeOptimizer(Optimizer):
             parameters = self._select_parameters()
             self.last_x = parameters
 
-            if type(parameters)==tuple:
+            if type(parameters) == tuple:
                 parameters = parameters[0]
             # Evaluate parameters
             if self.order == 0:
@@ -72,9 +74,10 @@ class IterativeOptimizer(Optimizer):
             # Log the iter corresponding to each parameter evaluated
             n_parameters = self.last_fx.size
             if self._iter == 0:
-                self._logs.data.evals_n_iters = np.array([n_parameters*[self._iter+1]])
+                self._logs.data.evals_n_iters = np.array([n_parameters * [self._iter + 1]])
             else:
-                self._logs.data.evals_n_iters = np.hstack((self._logs.data.evals_n_iters, np.array([n_parameters*[self._iter+1]])))
+                self._logs.data.evals_n_iters = np.hstack(
+                    (self._logs.data.evals_n_iters, np.array([n_parameters * [self._iter + 1]])))
 
             # Logs
             idx_best = np.argmin(self.last_fx)
@@ -85,12 +88,12 @@ class IterativeOptimizer(Optimizer):
         self._logs.data.evals_n_iters = np.array(self._logs.data.evals_n_iters)
         out = self.last_x
 
-            # self._logs.x = parameters
-            # self._logs.fx = fx
-            # self._logs.data.xOpt = out
-            # self._logs.data.fOpt = np.array(self.last_fx[:, idx_best])
-            # self._logs.nEvals += parameters.shape[0]
-            # self._logs.time = np.matrix(self.stopCriteria.get_time())
+        # self._logs.x = parameters
+        # self._logs.fx = fx
+        # self._logs.data.xOpt = out
+        # self._logs.data.fOpt = np.array(self.last_fx[:, idx_best])
+        # self._logs.nEvals += parameters.shape[0]
+        # self._logs.time = np.matrix(self.stopCriteria.get_time())
 
         return out
 
@@ -102,7 +105,6 @@ class IterativeOptimizer(Optimizer):
         if self.task.get_n_objectives() == 1:
             # SOO
             if self._iter == 0:
-
 
                 # self._objectives_curve, = plt.plot(self.get_logs().get_objectives().T, linewidth=2)
                 # plt.ylabel('Obj.Func.')
@@ -120,12 +122,14 @@ class IterativeOptimizer(Optimizer):
                 self._fig.axes[1].set_ylabel('Parameters')
                 self._fig.axes[1].set_xlabel('Evaluations')
             else:
-                self._objectives_curve.set_data(np.arange(self.get_logs().get_n_evals()), self.get_logs().get_objectives().T)
+                self._objectives_curve.set_data(np.arange(self.get_logs().get_n_evals()),
+                                                self.get_logs().get_objectives().T)
                 par = self.get_logs().get_parameters().T
                 for i, curve in enumerate(self._parameters_curves):
                     curve.set_data(np.arange(self.get_logs().get_n_evals()), par[:, i])
                 self._fig.axes[0].set_xlim(left=0, right=self.get_logs().get_n_evals())
-                self._fig.axes[0].set_ylim((np.min(self.get_logs().get_objectives()), np.max(self.get_logs().get_objectives())))
+                self._fig.axes[0].set_ylim(
+                    (np.min(self.get_logs().get_objectives()), np.max(self.get_logs().get_objectives())))
                 self._fig.canvas.draw()
         else:
             # MOO

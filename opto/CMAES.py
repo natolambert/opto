@@ -42,8 +42,11 @@ class CMAES(Optimizer):
         def objfunc(parameters):
             return np.array(self._evaluate(np.matrix(parameters)))[:, 0][0]  # Deal with transformations from/to np.matrix
 
+        cma.CMAOptions('bound')
         res = cma.fmin(objfunc, self.x0.tolist(), self.sigma,
-                       options={"bounds": [lb, up], "verbose": -1, "verb_disp": False,
+                       options={"bounds": [lb, up], "verbose": -1,
+                                'BoundaryHandler': cma.s.ch.BoundTransform,
+                                "verb_disp": False,
                                 "maxfevals": self.stopCriteria.get_n_maxEvals(), "popsize": self.popsize})
 
         # Delete log file optimizer (pretty much useless)

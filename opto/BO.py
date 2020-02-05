@@ -98,6 +98,7 @@ class BO(IterativeOptimizer):
             stopCriteria = StopCriteria(maxEvals=self.optimizer.maxEvals)
             p = DotMap()
             p.verbosity = 0
+            p.sigma = 1
             acq_opt = self.optimizer.optimizer(parameters=p, task=task, stopCriteria=stopCriteria)
             x = np.matrix(acq_opt.optimize())  # Optimize
             fx = self._model.predict(dataset=x.T)
